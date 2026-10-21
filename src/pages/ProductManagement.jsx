@@ -117,50 +117,65 @@ export default function ProductManagement() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Product Management</h1>
-        <button type="button" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" onClick={openAddModal}>
+    <section className="space-y-6">
+      <div className="breadcrumbs text-sm">
+        <ul>
+          <li>Admin</li>
+          <li>Products</li>
+        </ul>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">Product Management</h1>
+        <button type="button" className="btn btn-primary" onClick={openAddModal}>
           + Add Product
         </button>
       </div>
 
-      {loading && <p className="text-center text-gray-500 py-10">Loading...</p>}
+      {loading && (
+        <div className="flex justify-center p-10">
+          <span className="loading loading-spinner loading-lg" />
+        </div>
+      )}
 
       {!loading && error && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-lg flex items-center justify-between">
+        <div role="alert" className="alert alert-error">
           <span>{error}</span>
-          <button className="underline" onClick={loadProducts}>Retry</button>
+          <button className="btn btn-sm" onClick={loadProducts}>Retry</button>
         </div>
       )}
 
       {!loading && !error && products.length === 0 && (
-        <p className="text-center text-gray-500 py-10">ยังไม่มีสินค้าในระบบ</p>
+        <div className="alert">
+          <span>ยังไม่มีสินค้าในระบบ ลองกด + Add Product เพื่อเพิ่มสินค้าแรก</span>
+        </div>
       )}
 
       {!loading && !error && products.length > 0 && (
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto rounded-box bg-base-100 shadow">
+          <table className="table table-zebra">
+            <thead>
               <tr>
-                <th className="p-3">Product</th>
-                <th className="p-3">Category</th>
-                <th className="p-3">Price</th>
-                <th className="p-3">Actions</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className="border-t">
-                  <td className="p-3">{product.icon || '📦'} {product.name}</td>
-                  <td className="p-3">{product.category}</td>
-                  <td className="p-3">฿{Number(product.price).toLocaleString('en-US')}</td>
-                  <td className="p-3">
+                <tr key={product.id}>
+                  <td>{product.icon || '📦'} {product.name}</td>
+                  <td>
+                    <span className="badge badge-outline">{product.category}</span>
+                  </td>
+                  <td>฿{Number(product.price).toLocaleString('en-US')}</td>
+                  <td>
                     <div className="flex gap-2">
-                      <button type="button" onClick={() => startEdit(product)} className="bg-sky-600 text-white px-3 py-1 rounded text-sm">
+                      <button type="button" onClick={() => startEdit(product)} className="btn btn-info btn-sm">
                         Edit
                       </button>
-                      <button type="button" onClick={() => handleDelete(product.id)} className="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                      <button type="button" onClick={() => handleDelete(product.id)} className="btn btn-error btn-sm">
                         Delete
                       </button>
                     </div>
@@ -172,20 +187,32 @@ export default function ProductManagement() {
         </div>
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="font-bold text-lg mb-4">{editingId ? 'Edit Product' : 'Add Product'}</h3>
+      {/* Modal สำหรับเพิ่ม/แก้ไขสินค้า */}
+      <div className={`modal ${isModalOpen ? 'modal-open' : ''}`}>
+        <div className="modal-box max-h-[90vh] max-w-2xl overflow-y-auto">
+          <h3 className="font-bold text-lg">
+            {editingId ? 'Edit Product' : 'Add Product'}
+          </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+            <div>
+              <label className="label">
+                <span className="label-text">Product name</span>
+              </label>
               <input
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Product name"
-                className="border p-3 rounded-lg w-full"
+                className="input input-bordered w-full"
                 required
               />
+            </div>
+
+            <div>
+              <label className="label">
+                <span className="label-text">Price</span>
+              </label>
               <input
                 name="price"
                 type="number"
@@ -194,49 +221,75 @@ export default function ProductManagement() {
                 value={form.price}
                 onChange={handleChange}
                 placeholder="Price"
-                className="border p-3 rounded-lg w-full"
+                className="input input-bordered w-full"
                 required
               />
+            </div>
+
+            <div>
+              <label className="label">
+                <span className="label-text">Category</span>
+              </label>
               <select
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                className="border p-3 rounded-lg w-full"
+                className="select select-bordered w-full"
               >
                 {categoryOptions.map((category) => (
                   <option key={category}>{category}</option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="label">
+                <span className="label-text">Icon (emoji)</span>
+              </label>
               <input
                 name="icon"
                 value={form.icon}
                 onChange={handleChange}
                 placeholder="📦"
-                className="border p-3 rounded-lg w-full"
+                className="input input-bordered w-full"
               />
+            </div>
+
+            <div>
+              <label className="label">
+                <span className="label-text">Description</span>
+              </label>
               <textarea
                 name="description"
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Product description"
-                className="border p-3 rounded-lg w-full"
+                className="textarea textarea-bordered w-full"
                 rows={3}
               />
+            </div>
 
-              {formError && <p className="text-red-600 text-sm">{formError}</p>}
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg border">
-                  Cancel
-                </button>
-                <button type="submit" disabled={saving} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                  {saving ? 'Saving...' : editingId ? 'Save Changes' : 'Add Product'}
-                </button>
+            {formError && (
+              <div role="alert" className="alert alert-error">
+                <span>{formError}</span>
               </div>
-            </form>
-          </div>
+            )}
+
+            <div className="modal-action">
+              <button type="button" onClick={closeModal} className="btn">
+                Cancel
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>
+                {saving ? 'Saving...' : editingId ? 'Save Changes' : 'Add Product'}
+              </button>
+            </div>
+          </form>
         </div>
-      )}
-    </div>
+        {/* กดพื้นหลังเพื่อปิด Modal */}
+        <button type="button" className="modal-backdrop" onClick={closeModal} aria-label="close">
+          close
+        </button>
+      </div>
+    </section>
   )
 }
