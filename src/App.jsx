@@ -1,39 +1,26 @@
-import { useState } from 'react'
-import Header from './components/Header.jsx'
-import Sidebar from './components/Sidebar.jsx'
-import Dashboard from './components/Dashboard.jsx'
-import Products from './components/Products.jsx'
-import Profile from './components/Profile.jsx'
-import Workshop from './components/Workshop.jsx'
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout.jsx'
+import Home from './pages/Home.jsx'
+import About from './pages/About.jsx'
+import Products from './pages/Products.jsx'
+import ProductDetail from './pages/ProductDetail.jsx'
+import Profile from './pages/Profile.jsx'
+import NotFound from './pages/NotFound.jsx'
 
-function App() {
-  const [page, setPage] = useState('dashboard')
-  const [cartCount, setCartCount] = useState(2)
-
-  function addToCart(qty) {
-    setCartCount(cartCount + qty)
-  }
-
-  let content
-  if (page === 'products') {
-    content = <Products addToCart={addToCart} openWorkshop={() => setPage('workshop')} />
-  } else if (page === 'workshop') {
-    content = <Workshop cartCount={cartCount} addToCart={addToCart} />
-  } else if (page === 'profile') {
-    content = <Profile />
-  } else {
-    content = <Dashboard />
-  }
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header cartCount={cartCount} />
-      <div className="flex flex-col md:flex-row">
-        <Sidebar page={page} setPage={setPage} />
-        <main className="flex-1 p-6">{content}</main>
-      </div>
-    </div>
+    <Routes>
+      {/* Route ทุกตัวอยู่ภายใต้ Layout เดียวกัน จึงใช้ Navbar และ Footer ร่วมกันได้ */}
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="products" element={<Products />} />
+        <Route path="products/:id" element={<ProductDetail />} />
+        <Route path="profile" element={<Profile />} />
+      </Route>
+
+      {/* URL ที่ไม่ตรงกับ Route ไหนเลย */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
-
-export default App
