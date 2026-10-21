@@ -6,6 +6,7 @@ import Products from './pages/Products.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
 import Profile from './pages/Profile.jsx'
 import NotFound from './pages/NotFound.jsx'
+import ProductManagement from './pages/ProductManagement.jsx'
 
 export default function App() {
   return (
@@ -17,6 +18,8 @@ export default function App() {
         <Route path="products" element={<Products />} />
         <Route path="products/:id" element={<ProductDetail />} />
         <Route path="profile" element={<Profile />} />
+        {/* หน้าจัดการสินค้า ต่อ API จริงผ่าน JSON Server */}
+        <Route path="admin/products" element={<ProductManagement />} />
       </Route>
 
       {/* URL ที่ไม่ตรงกับ Route ไหนเลย */}
